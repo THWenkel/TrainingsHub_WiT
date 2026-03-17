@@ -1,0 +1,106 @@
+<%- include('../partials/header') %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1 class="h3"><i class="bi bi-calendar3 me-2 text-primary"></i>My Training Calendar</h1>
+  <div class="text-muted"><%= monthName %> <%= targetYear %></div>
+</div>
+
+<!-- Calendar Navigation -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <a href="/calendar?month=<%= prevMonth %>&year=<%= prevYear %>" class="btn btn-outline-secondary btn-sm">
+    <i class="bi bi-chevron-left me-1"></i>Previous
+  </a>
+  <h5 class="mb-0"><%= monthName %> <%= targetYear %></h5>
+  <a href="/calendar?month=<%= nextMonth %>&year=<%= nextYear %>" class="btn btn-outline-secondary btn-sm">
+    Next<i class="bi bi-chevron-right ms-1"></i>
+  </a>
+</div>
+
+<!-- Calendar Grid -->
+<div class="card shadow-sm mb-4">
+  <div class="card-body p-2">
+    <div class="row g-0 text-center fw-bold border-bottom mb-1">
+      <% ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(function(d) { %>
+        <div class="col py-2 text-muted small"><%= d %></div>
+      <% }); %>
+    </div>
+    <div class="row g-0" id="cal-grid">
+      <% calendarDays.forEach(function(day, idx) { %>
+        <% if (idx > 0 && idx % 7 === 0) { %>
+          </div><div class="row g-0">
+        <% } %>
+        <% if (idx === 0) { %><div class="row g-0"><% } %>
+        <div class="col border-start border-top cal-cell <%= day && day.date === today ? 'cal-today' : '' %>">
+          <% if (day) { %>
+            <div class="cal-day-num small <%= day.date === today ? 'text-white bg-primary rounded-circle' : 'text-muted' %>">
+              <%= day.day %>
+            </div>
+            <% day.events.forEach(function(ev) { %>
+              <a href="/trainings/<%= ev.id %>" class="cal-event badge text-truncate text-start mb-1 d-block text-decoration-none
+                  <%= ev.type === 'webinar' ? 'bg-info text-dark' : 'bg-success' %>"
+                 title="<%= ev.title %> at <%= ev.time %>">
+                <i class="bi <%= ev.type === 'webinar' ? 'bi-camera-video' : 'bi-people' %> me-1"></i>
+                <%= ev.time %> <%= ev.title %>
+              </a>
+            <% }); %>
+          <% } %>
+        </div>
+      <% }); %>
+    </div>
+  </div>
+</div>
+
+<!-- Upcoming Registrations List -->
+<div class="card shadow-sm">
+  <div class="card-header"><i class="bi bi-list-check me-1"></i>All My Registrations</div>
+  <% if (allRegistrations.length === 0) { %>
+    <div class="card-body text-center text-muted py-4">
+      <i class="bi bi-calendar-x display-4 d-block mb-2"></i>
+      No registrations yet. <a href="/trainings">Browse trainings</a>
+    </div>
+  <% } else { %>
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Training</th>
+            <th>Type</th>
+            <th>Date</th>
+            <th>Time</th>
+            <th>Location</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% allRegistrations.forEach(function(reg) { %>
+          <tr class="<%= reg.date < today ? 'text-muted' : '' %>">
+            <td><a href="/trainings/<%= reg.id %>"><%= reg.title %></a></td>
+            <td>
+              <span class="badge <%= reg.type === 'webinar' ? 'bg-info text-dark' : 'bg-success' %>">
+                <%= reg.type %>
+              </span>
+            </td>
+            <td><%= reg.date %></td>
+            <td><%= reg.time %></td>
+            <td><%= reg.location || '—' %></td>
+            <td>
+              <span class="badge <%= reg.reg_status === 'confirmed' ? 'bg-success' : reg.reg_status === 'cancelled' ? 'bg-secondary' : 'bg-warning text-dark' %>">
+                <%= reg.reg_status %>
+              </span>
+            </td>
+          </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+  <% } %>
+</div>
+
+<style>
+.cal-cell { min-height: 80px; padding: 4px; }
+.cal-day-num { display: inline-flex; align-items:center; justify-content:center; width:24px; height:24px; margin-bottom:2px; font-weight:600; }
+.cal-today { background-color: #f0f8ff; }
+.cal-event { font-size: 0.72rem; max-width: 100%; }
+</style>
+
+<%- include('../partials/footer') %>

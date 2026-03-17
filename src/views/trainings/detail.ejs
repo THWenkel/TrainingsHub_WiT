@@ -1,0 +1,202 @@
+<%- include('../partials/header') %>
+
+<nav aria-label="breadcrumb" class="mb-3">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/trainings">Trainings</a></li>
+    <li class="breadcrumb-item active"><%= training.title %></li>
+  </ol>
+</nav>
+
+<div class="row g-4">
+  <!-- Main Info -->
+  <div class="col-lg-8">
+    <div class="card shadow-sm">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span class="badge fs-6 <%= training.type === 'webinar' ? 'bg-info text-dark' : 'bg-success' %>">
+          <i class="bi <%= training.type === 'webinar' ? 'bi-camera-video' : 'bi-people' %> me-1"></i>
+          <%= training.type.charAt(0).toUpperCase() + training.type.slice(1) %>
+        </span>
+        <% if (currentUser && currentUser.role === 'admin') { %>
+          <div class="btn-group btn-group-sm">
+            <a href="/trainings/<%= training.id %>/edit" class="btn btn-outline-secondary">
+              <i class="bi bi-pencil me-1"></i>Edit
+            </a>
+            <form action="/trainings/<%= training.id %>/delete" method="POST" class="d-inline"
+                  onsubmit="return confirm('Delete this training? This cannot be undone.');">
+              <%- include('../partials/csrf') %>
+              <button type="submit" class="btn btn-outline-danger">
+                <i class="bi bi-trash me-1"></i>Delete
+              </button>
+            </form>
+          </div>
+        <% } %>
+      </div>
+      <div class="card-body">
+        <h2 class="card-title"><%= training.title %></h2>
+        <% if (training.description) { %>
+          <p class="card-text"><%= training.description %></p>
+        <% } %>
+        <hr>
+        <div class="row g-3">
+          <div class="col-sm-6">
+            <div class="d-flex align-items-start">
+              <i class="bi bi-calendar-date fs-5 text-primary me-2 mt-1"></i>
+              <div>
+                <div class="fw-semibold">Date & Time</div>
+                <div><%= training.date %> at <%= training.time %></div>
+                <div class="text-muted small"><%= training.duration_minutes %> minutes</div>
+              </div>
+            </div>
+          </div>
+          <% if (training.trainer) { %>
+          <div class="col-sm-6">
+            <div class="d-flex align-items-start">
+              <i class="bi bi-person-badge fs-5 text-primary me-2 mt-1"></i>
+              <div>
+                <div class="fw-semibold">Trainer</div>
+                <div><%= training.trainer %></div>
+              </div>
+            </div>
+          </div>
+          <% } %>
+          <% if (training.location) { %>
+          <div class="col-sm-6">
+            <div class="d-flex align-items-start">
+              <i class="bi bi-geo-alt fs-5 text-primary me-2 mt-1"></i>
+              <div>
+                <div class="fw-semibold">Location</div>
+                <div><%= training.location %></div>
+              </div>
+            </div>
+          </div>
+          <% } %>
+          <div class="col-sm-6">
+            <div class="d-flex align-items-start">
+              <i class="bi bi-currency-euro fs-5 text-primary me-2 mt-1"></i>
+              <div>
+                <div class="fw-semibold">Price</div>
+                <div><% if (training.price > 0) { %><%= training.price.toFixed(2) %> <%= training.currency %><% } else { %>Free<% } %></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="d-flex align-items-start">
+              <i class="bi bi-people fs-5 text-primary me-2 mt-1"></i>
+              <div>
+                <div class="fw-semibold">Participants</div>
+                <div><%= training.registered_count %> / <%= training.max_participants %> registered</div>
+                <div class="progress mt-1" style="height:6px;">
+                  <% const pct = Math.round((training.registered_count / training.max_participants) * 100); %>
+                  <div class="progress-bar <%= pct >= 90 ? 'bg-danger' : pct >= 60 ? 'bg-warning' : 'bg-success' %>"
+                       style="width:<%= pct %>%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin: Registrations List -->
+    <% if (currentUser && currentUser.role === 'admin' && registrations.length > 0) { %>
+    <div class="card shadow-sm mt-4">
+      <div class="card-header"><i class="bi bi-clipboard-check me-1"></i>Registrations (<%= registrations.length %>)</div>
+      <div class="table-responsive">
+        <table class="table table-hover mb-0">
+          <thead class="table-light">
+            <tr>
+              <th>Name</th>
+              <th>Email</th>
+              <th>Registered</th>
+              <th>Status</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% registrations.forEach(function(reg) { %>
+            <tr>
+              <td><%= reg.name %></td>
+              <td><%= reg.email %></td>
+              <td><%= reg.registered_at.substring(0, 10) %></td>
+              <td>
+                <span class="badge <%= reg.status === 'confirmed' ? 'bg-success' : reg.status === 'cancelled' ? 'bg-secondary' : 'bg-warning text-dark' %>">
+                  <%= reg.status %>
+                </span>
+              </td>
+              <td>
+                <form action="/trainings/<%= training.id %>/registration/<%= reg.id %>/status" method="POST" class="d-flex gap-1">
+                  <%- include('../partials/csrf') %>
+                  <select name="status" class="form-select form-select-sm" style="width:auto">
+                    <option value="pending" <%= reg.status === 'pending' ? 'selected' : '' %>>Pending</option>
+                    <option value="confirmed" <%= reg.status === 'confirmed' ? 'selected' : '' %>>Confirmed</option>
+                    <option value="cancelled" <%= reg.status === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+                  </select>
+                  <button type="submit" class="btn btn-sm btn-outline-primary">Update</button>
+                </form>
+              </td>
+            </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <% } %>
+  </div>
+
+  <!-- Sidebar: Registration -->
+  <div class="col-lg-4">
+    <div class="card shadow-sm">
+      <div class="card-body text-center p-4">
+        <% if (userRegistration && userRegistration.status !== 'cancelled') { %>
+          <div class="mb-3">
+            <i class="bi bi-check-circle-fill text-success display-4"></i>
+          </div>
+          <h5>You are registered!</h5>
+          <p class="text-muted">
+            Status:
+            <span class="badge <%= userRegistration.status === 'confirmed' ? 'bg-success' : 'bg-warning text-dark' %>">
+              <%= userRegistration.status %>
+            </span>
+          </p>
+          <form action="/trainings/<%= training.id %>/cancel" method="POST"
+                onsubmit="return confirm('Cancel your registration?');">
+            <%- include('../partials/csrf') %>
+            <button type="submit" class="btn btn-outline-danger">
+              <i class="bi bi-x-circle me-1"></i>Cancel Registration
+            </button>
+          </form>
+        <% } else if (training.registered_count >= training.max_participants) { %>
+          <div class="mb-3">
+            <i class="bi bi-x-octagon-fill text-danger display-4"></i>
+          </div>
+          <h5>Fully Booked</h5>
+          <p class="text-muted">This training has reached its maximum capacity.</p>
+        <% } else { %>
+          <div class="mb-3">
+            <i class="bi bi-calendar-plus text-primary display-4"></i>
+          </div>
+          <h5>Register Now</h5>
+          <% if (training.price > 0) { %>
+            <p class="text-muted">Price: <strong><%= training.price.toFixed(2) %> <%= training.currency %></strong></p>
+          <% } else { %>
+            <p class="text-muted">This training is free!</p>
+          <% } %>
+          <form action="/trainings/<%= training.id %>/register" method="POST">
+            <%- include('../partials/csrf') %>
+            <button type="submit" class="btn btn-primary btn-lg">
+              <i class="bi bi-person-check me-1"></i>Register
+            </button>
+          </form>
+        <% } %>
+
+        <% if (userAccess && userAccess.access_granted) { %>
+          <div class="mt-3 text-success small">
+            <i class="bi bi-unlock-fill me-1"></i>You have been granted access to this training.
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>

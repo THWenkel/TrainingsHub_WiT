@@ -1,0 +1,93 @@
+<%- include('../partials/header') %>
+
+<nav aria-label="breadcrumb" class="mb-3">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="/billing">Billing</a></li>
+    <li class="breadcrumb-item active">Edit</li>
+  </ol>
+</nav>
+
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card shadow-sm">
+      <div class="card-header">
+        <h4 class="mb-0"><i class="bi bi-credit-card me-2"></i>Billing Information</h4>
+      </div>
+      <div class="card-body p-4">
+        <form action="/billing" method="POST">
+          <%- include('../partials/csrf') %>
+          <h6 class="text-muted text-uppercase small mb-3">Contact & Address</h6>
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <label for="full_name" class="form-label fw-semibold">Full Name <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="full_name" name="full_name"
+                     value="<%= billing ? billing.full_name : '' %>" required maxlength="100">
+            </div>
+            <div class="col-md-6">
+              <label for="company" class="form-label fw-semibold">Company / Organization</label>
+              <input type="text" class="form-control" id="company" name="company"
+                     value="<%= billing ? billing.company : '' %>" maxlength="100">
+            </div>
+            <div class="col-12">
+              <label for="address" class="form-label fw-semibold">Street Address <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="address" name="address"
+                     value="<%= billing ? billing.address : '' %>" required maxlength="200">
+            </div>
+            <div class="col-md-6">
+              <label for="city" class="form-label fw-semibold">City <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="city" name="city"
+                     value="<%= billing ? billing.city : '' %>" required maxlength="100">
+            </div>
+            <div class="col-md-3">
+              <label for="zip_code" class="form-label fw-semibold">ZIP / Postal Code <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="zip_code" name="zip_code"
+                     value="<%= billing ? billing.zip_code : '' %>" required maxlength="20">
+            </div>
+            <div class="col-md-3">
+              <label for="country" class="form-label fw-semibold">Country <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="country" name="country"
+                     value="<%= billing ? billing.country : '' %>" required maxlength="100"
+                     placeholder="e.g. Germany">
+            </div>
+          </div>
+
+          <hr>
+          <h6 class="text-muted text-uppercase small mb-3">Payment Method</h6>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label for="payment_method" class="form-label fw-semibold">Payment Method <span class="text-danger">*</span></label>
+              <select class="form-select" id="payment_method" name="payment_method" required>
+                <option value="invoice" <%= (!billing || billing.payment_method === 'invoice') ? 'selected' : '' %>>Invoice</option>
+                <option value="bank_transfer" <%= (billing && billing.payment_method === 'bank_transfer') ? 'selected' : '' %>>Bank Transfer</option>
+                <option value="credit_card" <%= (billing && billing.payment_method === 'credit_card') ? 'selected' : '' %>>Credit Card</option>
+              </select>
+            </div>
+            <div class="col-md-6" id="iban-field">
+              <label for="iban" class="form-label fw-semibold">IBAN</label>
+              <input type="text" class="form-control font-monospace" id="iban" name="iban"
+                     value="<%= billing ? billing.iban : '' %>" maxlength="34"
+                     placeholder="DE89 3704 0044 0532 0130 00">
+              <div class="form-text">Required for Bank Transfer</div>
+            </div>
+          </div>
+
+          <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-check-lg me-1"></i>Save Billing Information
+            </button>
+            <a href="/billing" class="btn btn-outline-secondary">Cancel</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById('payment_method').addEventListener('change', function() {
+    const ibanField = document.getElementById('iban-field');
+    ibanField.style.opacity = this.value === 'bank_transfer' ? '1' : '0.5';
+  });
+</script>
+
+<%- include('../partials/footer') %>
