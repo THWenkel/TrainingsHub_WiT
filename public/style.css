@@ -1,0 +1,53 @@
+body {
+  background-color: #f8f9fa;
+}
+
+.navbar-brand {
+  font-size: 1.4rem;
+}
+
+.card {
+  border-radius: 0.5rem;
+}
+
+.cal-cell {
+  min-height: 80px;
+  padding: 4px;
+  border-right: 1px solid #dee2e6;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.cal-day-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  margin-bottom: 2px;
+  font-weight: 600;
+  font-size: 0.85rem;
+}
+
+.cal-today {
+  background-color: #f0f8ff;
+}
+
+.cal-event {
+  font-size: 0.7rem;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+dt {
+  font-weight: 600;
+}
+
+.table td, .table th {
+  vertical-align: middle;
+}
+
+.progress {
+  border-radius: 2px;
+}

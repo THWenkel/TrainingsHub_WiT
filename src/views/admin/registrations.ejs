@@ -1,0 +1,76 @@
+<%- include('../partials/header') %>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1 class="h3"><i class="bi bi-clipboard-check me-2 text-primary"></i>All Registrations</h1>
+  <span class="text-muted"><%= registrations.length %> result(s)</span>
+</div>
+
+<!-- Status filter -->
+<form class="d-flex gap-2 mb-4" method="GET">
+  <select name="status" class="form-select w-auto">
+    <option value="">All Statuses</option>
+    <option value="pending" <%= statusFilter === 'pending' ? 'selected' : '' %>>Pending</option>
+    <option value="confirmed" <%= statusFilter === 'confirmed' ? 'selected' : '' %>>Confirmed</option>
+    <option value="cancelled" <%= statusFilter === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+  </select>
+  <button type="submit" class="btn btn-outline-secondary"><i class="bi bi-filter me-1"></i>Filter</button>
+  <% if (statusFilter) { %>
+    <a href="/admin/registrations" class="btn btn-outline-danger"><i class="bi bi-x me-1"></i>Clear</a>
+  <% } %>
+</form>
+
+<div class="card shadow-sm">
+  <% if (registrations.length === 0) { %>
+    <div class="card-body text-center py-5 text-muted">
+      <i class="bi bi-clipboard-x display-4 d-block mb-2"></i>
+      No registrations found.
+    </div>
+  <% } else { %>
+    <div class="table-responsive">
+      <table class="table table-hover mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>User</th>
+            <th>Email</th>
+            <th>Training</th>
+            <th>Type</th>
+            <th>Date</th>
+            <th>Registered</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% registrations.forEach(function(reg) { %>
+          <tr>
+            <td><%= reg.user_name %></td>
+            <td><small class="text-muted"><%= reg.user_email %></small></td>
+            <td><a href="/trainings/<%= reg.training_id %>"><%= reg.training_title %></a></td>
+            <td><span class="badge <%= reg.type === 'webinar' ? 'bg-info text-dark' : 'bg-success' %>"><%= reg.type %></span></td>
+            <td><%= reg.date %></td>
+            <td><%= reg.registered_at.substring(0, 10) %></td>
+            <td>
+              <span class="badge <%= reg.status === 'confirmed' ? 'bg-success' : reg.status === 'cancelled' ? 'bg-secondary' : 'bg-warning text-dark' %>">
+                <%= reg.status %>
+              </span>
+            </td>
+            <td>
+              <form action="/admin/registrations/<%= reg.id %>/status" method="POST" class="d-flex gap-1">
+                <%- include('../partials/csrf') %>
+                <select name="status" class="form-select form-select-sm" style="width:auto">
+                  <option value="pending" <%= reg.status === 'pending' ? 'selected' : '' %>>Pending</option>
+                  <option value="confirmed" <%= reg.status === 'confirmed' ? 'selected' : '' %>>Confirmed</option>
+                  <option value="cancelled" <%= reg.status === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+                </select>
+                <button type="submit" class="btn btn-sm btn-outline-primary">Update</button>
+              </form>
+            </td>
+          </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    </div>
+  <% } %>
+</div>
+
+<%- include('../partials/footer') %>

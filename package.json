@@ -1,0 +1,35 @@
+{
+  "name": "trainingshub_wit",
+  "version": "1.0.0",
+  "description": "Application to manage users which are booking online trainings and webinars, charging and managing",
+  "main": "index.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "node --watch app.js",
+    "test": "node --test tests/**/*.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/THWenkel/TrainingsHub_WiT.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/THWenkel/TrainingsHub_WiT/issues"
+  },
+  "homepage": "https://github.com/THWenkel/TrainingsHub_WiT#readme",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "better-sqlite3": "^12.8.0",
+    "connect-flash": "^0.1.1",
+    "csrf-sync": "^4.2.1",
+    "ejs": "^5.0.1",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.3.1",
+    "express-session": "^1.19.0",
+    "express-validator": "^7.3.1",
+    "method-override": "^3.0.0"
+  }
+}

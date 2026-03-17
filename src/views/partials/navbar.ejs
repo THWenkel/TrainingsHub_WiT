@@ -1,0 +1,57 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="/">
+      <i class="bi bi-mortarboard-fill me-2"></i>TrainingsHub
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <% if (currentUser) { %>
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/trainings"><i class="bi bi-list-ul me-1"></i>Trainings</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/calendar"><i class="bi bi-calendar3 me-1"></i>My Calendar</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/billing"><i class="bi bi-credit-card me-1"></i>Billing</a>
+          </li>
+          <% if (currentUser.role === 'admin') { %>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+              <i class="bi bi-shield-lock me-1"></i>Admin
+            </a>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="/admin"><i class="bi bi-speedometer2 me-1"></i>Dashboard</a></li>
+              <li><a class="dropdown-item" href="/admin/users"><i class="bi bi-people me-1"></i>Users</a></li>
+              <li><a class="dropdown-item" href="/admin/registrations"><i class="bi bi-clipboard-check me-1"></i>Registrations</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="/trainings/new"><i class="bi bi-plus-circle me-1"></i>New Training</a></li>
+            </ul>
+          </li>
+          <% } %>
+        </ul>
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+              <i class="bi bi-person-circle me-1"></i><%= currentUser.name %>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><span class="dropdown-item-text text-muted small"><%= currentUser.role === 'admin' ? 'Administrator' : 'User' %></span></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="/billing"><i class="bi bi-credit-card me-1"></i>Billing</a></li>
+              <li><a class="dropdown-item text-danger" href="/auth/logout"><i class="bi bi-box-arrow-right me-1"></i>Logout</a></li>
+            </ul>
+          </li>
+        </ul>
+      <% } else { %>
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item"><a class="nav-link" href="/auth/login">Login</a></li>
+          <li class="nav-item"><a class="nav-link" href="/auth/register">Register</a></li>
+        </ul>
+      <% } %>
+    </div>
+  </div>
+</nav>
