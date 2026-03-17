@@ -5,6 +5,6 @@ Application to manage users which are booking online trainings and webinars, cha
 ## Features
 
 - User registration and authentication
-- Course catalog with search and filtering options
 - Online booking and payment processing
 - Trainer dashboard for course management and scheduling
+- Course catalog with search and filtering options
